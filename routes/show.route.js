@@ -38,4 +38,37 @@ showRouter.get("/genres/:genre", async (req, res) => {
   }
 });
 
+showRouter.delete("/:id", async (req, res) => {
+  try {
+    const show = await Show.findByPk(req.params.id);
+    await show.destroy();
+    res.send("show deleted");
+  } catch (err) {
+    res.json(err.message);
+  }
+});
+
+// Update rating
+showRouter.put("/:id/rating", async (req, res) => {
+  
+  try {
+    const show = await Show.findByPk(req.params.id);
+    await show.update({ rating: req.body.rating });
+    res.send("show rating updated");
+  } catch (err) {
+    res.send(err.message);
+  }
+});
+
+// Update status
+showRouter.put("/:id/status", async (req, res) => {
+  try {
+    const show = await Show.findByPk(req.params.id);
+    await show.update({ status: req.body.status });
+    res.send("show status updated");
+  } catch (err) {
+    res.send(err.message);
+  }
+});
+
 module.exports = { showRouter };

@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { User } = require("../models/index");
+const { User, Show } = require("../models/index");
 const userRouter = Router();
 
 //TODO: Add handling for empty returns
@@ -34,26 +34,21 @@ userRouter.get("/:id/shows", async (req, res) => {
   }
 });
 
-// app.put("/users/:id/shows", async (req, res) => {
-//   try {
-//     const user = await User.findAll({
-//       include: [{ model: Show }],
-//       where: { id: req.params.id }
-//     });
-
-//     let userShows = user.shows;
-//     // userShows.push(req.body.show);
-//     // user.update({ shows: userShows });
-
-//     // const updatedUser = await User.findAll({
-//     //   include: [{ model: Show }],
-//     //   where: { id: req.params.id }
-//     // });
-
-//     res.json(user.shows)
-//   } catch (err) {
-//     res.send(err.message);
-//   }
-// });
+// Create new show for user
+userRouter.put("/:id/shows", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    Show.create({
+      title: req.body.title,
+      genre: req.body.genre, // check how to enforce enum? validation?
+      rating: req.body.rating,
+      status: req.body.status,
+      userId: user.id
+    });
+    res.json("show created under user")
+  } catch (err) {
+    res.send(err.message);
+  }
+});
 
 module.exports = { userRouter };
