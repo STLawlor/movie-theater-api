@@ -49,8 +49,7 @@ showRouter.delete("/:id", async (req, res) => {
 });
 
 // Update rating
-showRouter.put("/:id/rating", async (req, res) => {
-  
+showRouter.put("/:id/watched", async (req, res) => {
   try {
     const show = await Show.findByPk(req.params.id);
     await show.update({ rating: req.body.rating });
@@ -61,7 +60,7 @@ showRouter.put("/:id/rating", async (req, res) => {
 });
 
 // Update status
-showRouter.put("/:id/status", async (req, res) => {
+showRouter.put("/:id/updates", async (req, res) => {
   try {
     const show = await Show.findByPk(req.params.id);
     await show.update({ status: req.body.status });
