@@ -3,11 +3,12 @@ const { body, validationResult } = require("express-validator");
 const { Show } = require("../models/index");
 const showRouter = Router();
 
-//TODO: Add handling for empty returns
-
 showRouter.get("/", async (req, res) => {
   try {
     const shows = await Show.findAll();
+    if (shows.length === 0) {
+      res.send("No shows found");
+    }
     res.json(shows);
   } catch (err) {
     res.send(err.message);
@@ -17,6 +18,9 @@ showRouter.get("/", async (req, res) => {
 showRouter.get("/:id", async (req, res) => {
   try {
     const show = await Show.findByPk(req.params.id);
+    if (!show) {
+      throw new Error("Show does not exist");
+    }
     res.json(show);
   } catch (err) {
     res.send(err.message);
@@ -33,6 +37,10 @@ showRouter.get("/genres/:genre", async (req, res) => {
         genre: genre,
       },
     });
+
+    if (genreShows.length === 0) {
+      throw new Error("No shows in this genre found");
+    }
     res.json(genreShows);
   } catch (err) {
     res.send(err.message);

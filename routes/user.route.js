@@ -3,11 +3,12 @@ const { body, validationResult } = require("express-validator");
 const { User, Show } = require("../models/index");
 const userRouter = Router();
 
-//TODO: Add handling for empty returns
-
 userRouter.get("/", async (req, res) => {
   try {
     const users = await User.findAll();
+    if (users.length === 0) {
+      res.send("No users found");
+    }
     res.json(users);
   } catch (err) {
     res.send(err.message);
@@ -17,6 +18,9 @@ userRouter.get("/", async (req, res) => {
 userRouter.get("/:id", async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
+    if (!user) {
+      throw new Error("User does not exist");
+    }
     res.json(user);
   } catch (err) {
     res.send(err.message);
@@ -29,6 +33,12 @@ userRouter.get("/:id/shows", async (req, res) => {
       include: [{ model: Show }],
       where: { id: req.params.id },
     });
+    if (user.length === 0) {
+      throw new Error("User does not exist");
+    }
+    if (user[0].shows.length === 0) {
+      throw new Error("No shows for this user found");
+    }
     res.json(user);
   } catch (err) {
     res.send(err.message);
