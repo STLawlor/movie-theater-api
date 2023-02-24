@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const { body, validationResult } = require("express-validator");
 const { Show } = require("../models/index");
 const showRouter = Router();
 
@@ -49,25 +50,44 @@ showRouter.delete("/:id", async (req, res) => {
 });
 
 // Update rating
-showRouter.put("/:id/watched", async (req, res) => {
-  try {
-    const show = await Show.findByPk(req.params.id);
-    await show.update({ rating: req.body.rating });
-    res.send("show rating updated");
-  } catch (err) {
-    res.send(err.message);
+showRouter.put(
+  "/:id/watched",
+  body("rating").not().isEmpty().trim(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.json(errors.array());
+    } else {
+      try {
+        const show = await Show.findByPk(req.params.id);
+        await show.update({ rating: req.body.rating });
+        res.send("show rating updated");
+      } catch (err) {
+        res.send(err.message);
+      }
+    }
   }
-});
+);
 
 // Update status
-showRouter.put("/:id/updates", async (req, res) => {
-  try {
-    const show = await Show.findByPk(req.params.id);
-    await show.update({ status: req.body.status });
-    res.send("show status updated");
-  } catch (err) {
-    res.send(err.message);
+showRouter.put(
+  "/:id/updates",
+  body("status").not().isEmpty().trim(),
+  body("status").isLength({ min: 5, max: 25 }),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.json(errors.array());
+    } else {
+      try {
+        const show = await Show.findByPk(req.params.id);
+        await show.update({ status: req.body.status });
+        res.send("show status updated");
+      } catch (err) {
+        res.send(err.message);
+      }
+    }
   }
-});
+);
 
 module.exports = { showRouter };
